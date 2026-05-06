@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<!-- ============================================================
+     PORTFOLIO — David Moinse · Data Analyst
+     Fichier : index.html
+     À déposer à la racine de ton dépôt GitHub Pages
+     (nom du dépôt : ton-username.github.io)
+     ============================================================ -->
+<html lang="fr">
+<head>
+
+  <!-- Encodage des caractères : indispensable pour les accents français -->
+  <meta charset="UTF-8">
+
+  <!-- Rend la page responsive sur mobile (zoom automatique désactivé) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Titre qui s'affiche dans l'onglet du navigateur -->
+  <title>David Moinse — Data Analyst</title>
+
+  <!-- Préconnexion à Google Fonts pour accélérer le chargement -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <!-- Chargement des polices :
+       - Space Mono  : police monospace, utilisée pour les labels techniques
+       - Syne        : police principale, utilisée pour les titres et le corps -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+  /* ============================================================
+     RESET CSS
+     Supprime les marges et paddings par défaut du navigateur.
+     box-sizing: border-box = la largeur inclut le padding et la bordure
+     ============================================================ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ============================================================
+     VARIABLES CSS (palette de couleurs)
+     Accessible partout avec var(--nom-variable)
+     Pour changer une couleur : modifie-la ici, elle change partout.
+     ============================================================ */
+  :root {
+    --bg:          #050a12;                    /* Fond principal — noir profond (espace) */
+    --surface:     #0b1623;                    /* Fond des cartes — bleu nuit */
+    --border:      rgba(100,200,255,0.12);     /* Couleur des bordures — bleu très transparent */
+    --cyan:        #4dd8e0;                    /* Couleur d'accent principale — cyan */
+    --cyan-glow:   rgba(77,216,224,0.08);      /* Version ultra-transparente du cyan (fonds) */
+    --text:        #cdd9e8;                    /* Texte courant — bleu-gris clair */
+    --text-muted:  #5e7a9a;                    /* Texte secondaire — bleu-gris foncé */
+    --text-bright: #eef4ff;                    /* Texte en évidence — blanc bleuté */
+    --accent:      #ff7b5c;                    /* Accent rouge-orangé (planète animée) */
+    --green:       #3ce88a;                    /* Vert — badges "terminé" */
+    --amber:       #f0a030;                    /* Amber — badges "en cours" */
+  }
+
+  /* ============================================================
+     COMPORTEMENT DU SCROLL
+     scroll-behavior: smooth = les ancres (#profil, #projets...)
+     défilent doucement au lieu de sauter brutalement.
+     C'est ce qui rend les liens du menu agréables à utiliser.
+     ============================================================ */
+  html { scroll-behavior: smooth; }
+
+  /* ============================================================
+     STYLES DU BODY (page entière)
+     ============================================================ */
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden; /* Empêche le scroll horizontal non voulu */
+  }
+
+  /* ============================================================
+     CANVAS DES ÉTOILES
+     Position fixe = reste en arrière-plan même quand on défile.
+     z-index: 0 = sous tout le contenu.
+     pointer-events: none = les clics passent à travers.
+     ============================================================ */
+  #stars {
+    position: fixed;
+    inset: 0;            /* Équivalent de top:0; right:0; bottom:0; left:0 */
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ============================================================
+     BARRE DE NAVIGATION (menu fixe en haut)
+     position: fixed = reste en haut même en scrollant
+     backdrop-filter: blur = effet de verre dépoli sur le fond
+     ============================================================ */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;         /* Au-dessus de tout le reste */
+    display: flex;
+    justify-content: space-between;   /* Logo à gauche, liens à droite */
+    align-items: center;
+    padding: 1.25rem 3rem;
+    background: rgba(5,10,18,0.8);    /* Fond semi-transparent */
+    backdrop-filter: blur(16px);      /* Flou de l'arrière-plan */
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  /* Logo "// david.moinse" en haut à gauche */
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+    letter-spacing: 0.08em;
+    text-decoration: none;  /* Supprime le soulignement du lien */
+  }
+
+  /* Liste des liens de navigation */
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+
+  /* Style de chaque lien du menu
+     IMPORTANT : les href="#profil", "#competences" etc. correspondent
+     aux id="" des sections HTML plus bas — c'est ce qui rend
+     les liens cliquables et fait défiler jusqu'à la bonne section. */
+  nav a {
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;   /* Animation douce au survol */
+  }
+  nav a:hover { color: var(--cyan); }  /* Cyan au survol */
+
+  /* ============================================================
+     SECTIONS
+     z-index: 1 = au-dessus du canvas d'étoiles (z-index: 0)
+     ============================================================ */
+  section { position: relative; z-index: 1; }
+
+  /* ============================================================
+     SECTION HERO (page d'accueil — première section)
+     min-height: 100vh = occupe au minimum toute la hauteur de l'écran
+     ============================================================ */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 3rem 4rem;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;  /* Nécessaire pour positionner l'orbite SVG en absolu */
+  }
+
+  /* Petit texte en haut de la hero : "Data Analyst · Contrat..." */
+  .hero-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  /* Petit trait horizontal avant le label (généré en CSS pur) */
+  .hero-label::before {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 1px;
+    background: var(--cyan);
+  }
+
+  /* ============================================================
+     TITRE PRINCIPAL (H1) — ton nom "David Moinse"
+     clamp(min, préféré, max) = taille fluide selon la largeur de l'écran :
+       - 2rem    sur très petit écran (mobile étroit)
+       - 4.5vw   taille relative à la largeur de la fenêtre
+       - 3.5rem  maximum (environ 56px) — réduit par rapport à l'original
+     Pour agrandir : augmente le 3ème chiffre. Pour réduire : diminue-le.
+     ============================================================ */
+  h1 {
+    font-size: clamp(2rem, 4.5vw, 3.5rem);  /* ← taille réduite ici */
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--text-bright);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+  /* La partie "Moinse" s'affiche en cyan */
+  h1 span { color: var(--cyan); }
+
+  /* Sous-titre de la hero */
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 560px;
+    margin-bottom: 0.75rem;
+    line-height: 1.8;
+  }
+
+  /* Ligne de contact (ville, téléphone, email) */
+  .hero-contact {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 2.5rem;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap; /* Passe à la ligne sur mobile */
+  }
+  .hero-contact a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+  .hero-contact a:hover { color: var(--cyan); }
+
+  /* Boutons de la hero ("Voir les projets" et "GitHub") */
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  /* Style de base commun aux deux boutons */
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.875rem 1.75rem;
+    border-radius: 2px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  /* Bouton principal : fond cyan, texte noir */
+  .btn-primary { background: var(--cyan); color: var(--bg); font-weight: 700; }
+  .btn-primary:hover { background: #7be8f0; }
+  /* Bouton secondaire : bordure fine, pas de fond */
+  .btn-ghost { border: 1px solid var(--border); color: var(--text-muted); }
+  .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  /* ============================================================
+     ORBITE SVG (planètes animées — décoratif, côté droit de la hero)
+     position: absolute = positionnée par rapport au .hero
+     opacity: 0.3 = très transparente, juste un décor
+     pointer-events: none = les clics passent à travers
+     ============================================================ */
+  .orbit-wrap {
+    position: absolute;
+    right: -60px;
+    top: 50%;
+    transform: translateY(-55%);
+    width: 480px;
+    height: 480px;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  /* ============================================================
+     SÉPARATEURS (lignes horizontales entre sections)
+     Dégradé transparent → couleur → transparent = effet élégant
+     ============================================================ */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border) 40%, var(--border) 60%, transparent);
+  }
+
+  /* ============================================================
+     CONTAINER CENTRÉ (utilisé par toutes les sections de contenu)
+     max-width: 1100px + margin: auto = centrage horizontal
+     ============================================================ */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 3rem; }
+
+  /* En-tête de chaque section : "01 / Profil", "02 / Compétences"... */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    margin-bottom: 3rem;
+    padding-top: 5rem;   /* Compense la barre de navigation fixe en haut */
+  }
+  /* Numéro de section en cyan (01 /, 02 /, etc.) */
+  .section-num { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--cyan); letter-spacing: 0.1em; }
+
+  /* Titres de section (h2) */
+  h2 { font-size: 2rem; font-weight: 800; color: var(--text-bright); letter-spacing: -0.02em; }
+
+  /* ============================================================
+     SECTION PROFIL
+     ============================================================ */
+  .profil-text { max-width: 680px; padding-bottom: 5rem; }
+  .profil-text p { font-size: 1.05rem; color: var(--text); line-height: 1.85; margin-bottom: 1rem; }
+
+  /* Badges colorés sous le texte du profil */
+  .badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border-radius: 2px;
+    margin-right: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .badge-green { background: rgba(60,232,138,0.12); color: var(--green); border: 0.5px solid rgba(60,232,138,0.25); }
+  .badge-cyan  { background: rgba(77,216,224,0.1);  color: var(--cyan);  border: 0.5px solid rgba(77,216,224,0.25); }
+  .badge-amber { background: rgba(240,160,48,0.1);  color: var(--amber); border: 0.5px solid rgba(240,160,48,0.25); }
+
+  /* ============================================================
+     SECTION COMPÉTENCES — grille de cartes de skills
+     auto-fit + minmax = le nombre de colonnes s'adapte automatiquement
+     ============================================================ */
+  .skills-section { padding-bottom: 5rem; }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+
+  /* Carte de groupe de compétences */
+  .skill-group {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+  }
+  .skill-group:hover { border-color: rgba(77,216,224,0.35); }
+
+  /* Titre du groupe ("Analyse & Traitement", "Visualisation"...) */
+  .skill-group-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  /* Conteneur des tags (flex wrap = retour à la ligne automatique) */
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+  /* Tag de compétence (Python, pandas, SQL...) */
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 0.3rem 0.65rem;
+    background: var(--cyan-glow);
+    border: 0.5px solid var(--border);
+    border-radius: 2px;
+    color: var(--text);
+  }
+  /* Variante amber pour les compétences "en cours d'acquisition" */
+  .tag-wip { background: rgba(240,160,48,0.08); border-color: rgba(240,160,48,0.2); color: var(--amber); }
+
+  /* ============================================================
+     SECTION PROJETS — grille de cartes projet
+     ============================================================ */
+  .projects-section { padding-bottom: 5rem; }
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.5rem; }
+
+  /* Carte projet — peut être un <a href="..."> (lien) ou un <div> */
+  .project-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1.75rem;
+    transition: all 0.25s;
+    text-decoration: none;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Trait cyan en haut de la carte qui s'étend au survol */
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--cyan);
+    transform: scaleX(0);       /* Invisible par défaut */
+    transform-origin: left;
+    transition: transform 0.25s;
+  }
+  .project-card:hover { border-color: rgba(77,216,224,0.3); }
+  .project-card:hover::before { transform: scaleX(1); }  /* Visible au survol */
+
+  /* En-tête de la carte projet (ex: "Personnel · 2026 · NASA") */
+  .project-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  /* Petits points colorés devant le tag */
+  .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .dot-green { background: var(--green); }   /* Vert = projet actif */
+  .dot-muted { background: var(--text-muted); }  /* Gris = projet de formation */
+
+  .project-title  { font-size: 1rem; font-weight: 700; color: var(--text-bright); margin-bottom: 0.75rem; line-height: 1.35; }
+  .project-desc   { font-size: 0.875rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 1.25rem; }
+  .project-tools  { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .project-tool   { font-family: 'Space Mono', monospace; font-size: 10px; padding: 0.2rem 0.5rem; background: rgba(255,255,255,0.04); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 2px; color: var(--text-muted); }
+
+  /* ============================================================
+     SECTION EXPÉRIENCE — timeline verticale
+     grid-template-columns: 200px 1fr = date à gauche, contenu à droite
+     ============================================================ */
+  .experience-section { padding-bottom: 5rem; }
+  .timeline { display: flex; flex-direction: column; }
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    padding: 2rem 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .timeline-item:last-child { border-bottom: none; }
+  .timeline-date { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 0.05em; padding-top: 0.2rem; line-height: 1.6; }
+  .timeline-org  { font-size: 12px; color: var(--cyan); margin-top: 0.3rem; }
+  .timeline-role { font-size: 1rem; font-weight: 700; color: var(--text-bright); margin-bottom: 0.75rem; }
+  .timeline-body { font-size: 0.875rem; color: var(--text-muted); line-height: 1.75; }
+  .timeline-body ul { padding-left: 1rem; }
+  .timeline-body li { margin-bottom: 0.3rem; }
+
+  /* ============================================================
+     SECTION FORMATIONS
+     ============================================================ */
+  .formations-section { padding-bottom: 6rem; }
+  .formations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
+  .formation-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 4px; padding: 1.25rem 1.5rem; }
+  .formation-year  { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--cyan); letter-spacing: 0.15em; margin-bottom: 0.5rem; }
+  .formation-title { font-size: 0.95rem; font-weight: 700; color: var(--text-bright); line-height: 1.4; }
+  .formation-detail { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  footer {
+    border-top: 0.5px solid var(--border);
+    padding: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer p { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 0.05em; }
+  .footer-links { display: flex; gap: 2rem; }
+  .footer-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--cyan); }
+
+  /* ============================================================
+     ANIMATIONS D'ENTRÉE (effet fadeUp sur la hero)
+     Les éléments de la hero montent en fondu au chargement.
+     animation-delay = décalage progressif pour un effet en cascade.
+     ============================================================ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero > * { animation: fadeUp 0.7s ease both; }
+  .hero > *:nth-child(1) { animation-delay: 0.1s; }
+  .hero > *:nth-child(2) { animation-delay: 0.2s; }
+  .hero > *:nth-child(3) { animation-delay: 0.35s; }
+  .hero > *:nth-child(4) { animation-delay: 0.45s; }
+  .hero > *:nth-child(5) { animation-delay: 0.55s; }
+
+  /* ============================================================
+     RESPONSIVE MOBILE (écrans < 768px)
+     @media = règles appliquées seulement si la condition est vraie
+     ============================================================ */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    nav ul { display: none; }           /* Cache le menu sur mobile */
+    .hero { padding: 7rem 1.5rem 3rem; }
+    .container { padding: 0 1.5rem; }
+    .orbit-wrap { display: none; }      /* Cache l'orbite sur mobile */
+    .timeline-item { grid-template-columns: 1fr; gap: 0.5rem; }  /* 1 colonne sur mobile */
+    footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     CANVAS DES ÉTOILES (fond animé)
+     Le dessin est fait en JavaScript plus bas.
+     ============================================================ -->
+<canvas id="stars"></canvas>
+
+<!-- ============================================================
+     BARRE DE NAVIGATION (fixe en haut)
+     Les href="#profil", "#competences" etc. correspondent aux
+     attributs id="" des sections plus bas.
+     scroll-behavior: smooth (défini dans html {}) fait le défilement doux.
+     ============================================================ -->
+<nav>
+  <a href="#" class="nav-logo">// david.moinse</a>
+  <ul>
+    <!-- Chaque lien pointe vers l'id de la section correspondante -->
+    <li><a href="#profil">Profil</a></li>
+    <li><a href="#competences">Compétences</a></li>
+    <li><a href="#projets">Projets</a></li>
+    <li><a href="#experience">Expérience</a></li>
+    <li><a href="#formations">Formations</a></li>
+  </ul>
+</nav>
+
+<!-- ============================================================
+     SECTION HERO — première section visible (pas d'id nécessaire ici)
+     L'animation SVG des planètes est en position: absolute dans .hero
+     ============================================================ -->
+<section>
+  <div class="hero">
+
+    <!-- Orbite SVG décorative (planètes animées) -->
+    <svg class="orbit-wrap" viewBox="0 0 480 480" fill="none" aria-hidden="true">
+      <!-- Cercles orbitaux (pointillés) -->
+      <circle cx="240" cy="240" r="210" stroke="#4dd8e0" stroke-width="0.5" stroke-dasharray="4 8"/>
+      <circle cx="240" cy="240" r="155" stroke="#4dd8e0" stroke-width="0.5" stroke-dasharray="2 6"/>
+      <circle cx="240" cy="240" r="96"  stroke="#4dd8e0" stroke-width="0.8"/>
+      <!-- Planète centrale (bleue) -->
+      <circle cx="240" cy="240" r="96" fill="#0b1e30"/>
+      <circle cx="240" cy="240" r="78" fill="#0d2540"/>
+      <!-- Ellipse = anneau autour de la planète -->
+      <ellipse cx="240" cy="250" rx="68" ry="36" stroke="#4dd8e0" stroke-width="0.5" opacity="0.45"/>
+      <circle cx="240" cy="240" r="4" fill="#4dd8e0"/>
+      <!-- Petite planète rouge qui tourne sur l'orbite extérieure -->
+      <circle cx="240" cy="30" r="4" fill="#ff7b5c">
+        <animateTransform attributeName="transform" type="rotate"
+          from="0 240 240" to="360 240 240" dur="12s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Petite planète verte qui tourne sur l'orbite intermédiaire -->
+      <circle cx="395" cy="240" r="3" fill="#3ce88a">
+        <animateTransform attributeName="transform" type="rotate"
+          from="120 240 240" to="480 240 240" dur="20s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+
+    <!-- Label au-dessus du titre -->
+    <div class="hero-label">Data Analyst · Contrat de professionnalisation recherché</div>
+
+    <!-- Titre principal — taille réduite dans le CSS (.hero h1) -->
+    <h1>David<br><span>Moinse</span></h1>
+
+    <!-- Accroche courte -->
+    <p class="hero-sub">Certifié Google Data Analytics (avril 2026). J'ai choisi la data par passion, pas par hasard — venant de l'électronique et de l'informatique, j'apprends chaque jour avec Python, SQL et Tableau.</p>
+
+    <!-- Coordonnées de contact -->
+    <div class="hero-contact">
+      <span>Cheillé (37)</span>
+      <a href="tel:0682124608">06 82 12 46 08</a>
+      <a href="mailto:david.moinse370@gmail.com">david.moinse370@gmail.com</a>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="hero-cta">
+      <!-- Bouton 1 : défile vers la section Projets -->
+      <a href="#projets" class="btn btn-primary">Voir les projets →</a>
+      <!-- Bouton 2 : lien externe vers GitHub — REMPLACE l'URL par la tienne ! -->
+      <a href="https://github.com/TON-USERNAME" class="btn btn-ghost" target="_blank">GitHub ↗</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- Séparateur visuel entre sections -->
+<div class="divider"></div>
+
+<!-- ============================================================
+     SECTION PROFIL
+     id="profil" ← correspond au href="#profil" dans le menu nav
+     ============================================================ -->
+<section id="profil" class="container">
+  <div class="section-header">
+    <span class="section-num">01 /</span>
+    <h2>Profil</h2>
+  </div>
+  <div class="profil-text">
+    <p>Data Analyst certifié Google (avril 2026), en recherche de contrat de professionnalisation. Je travaille quotidiennement avec Python, SQL et Tableau — et je viens de débuter la Machine Learning Specialization d'Andrew Ng.</p>
+    <p>Mon parcours passe par l'électronique de test chez Safran Electronics & Defense, la maintenance informatique indépendante, et les soins de santé. Cette diversité m'a appris la rigueur, la détection d'anomalies, et la documentation structurée — des compétences directement transférables à la data.</p>
+    <div style="margin-top:1.5rem;">
+      <span class="badge badge-green">Certifié Google Data Analytics</span>
+      <span class="badge badge-cyan">Machine Learning — en cours</span>
+      <span class="badge badge-amber">Contrat de pro recherché</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     SECTION COMPÉTENCES
+     id="competences" ← correspond au href="#competences" dans le menu
+     ============================================================ -->
+<section id="competences" class="container skills-section">
+  <div class="section-header">
+    <span class="section-num">02 /</span>
+    <h2>Compétences</h2>
+  </div>
+  <div class="skills-grid">
+
+    <!-- Groupe 1 : outils d'analyse -->
+    <div class="skill-group">
+      <div class="skill-group-label">Analyse & Traitement</div>
+      <div class="skill-tags">
+        <span class="tag">Python</span>
+        <span class="tag">pandas</span>
+        <span class="tag">numpy</span>
+        <span class="tag">SQL</span>
+        <span class="tag">BigQuery</span>
+      </div>
+    </div>
+
+    <!-- Groupe 2 : outils de visualisation -->
+    <div class="skill-group">
+      <div class="skill-group-label">Visualisation</div>
+      <div class="skill-tags">
+        <span class="tag">matplotlib</span>
+        <span class="tag">seaborn</span>
+        <span class="tag">Tableau</span>
+        <span class="tag">Excel avancé</span>
+      </div>
+    </div>
+
+    <!-- Groupe 3 : préparation des données -->
+    <div class="skill-group">
+      <div class="skill-group-label">Data Preparation</div>
+      <div class="skill-tags">
+        <span class="tag">Nettoyage</span>
+        <span class="tag">Structuration BDD</span>
+        <span class="tag">Détection anomalies</span>
+        <span class="tag">Valeurs manquantes</span>
+      </div>
+    </div>
+
+    <!-- Groupe 4 : compétences en cours (tags amber = "wip" = work in progress) -->
+    <div class="skill-group">
+      <div class="skill-group-label">En cours d'acquisition</div>
+      <div class="skill-tags">
+        <span class="tag tag-wip">Machine Learning</span>
+        <span class="tag tag-wip">Andrew Ng · Coursera</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     SECTION PROJETS
+     id="projets" ← correspond au href="#projets" dans le menu
+     Les cartes qui sont des <a href="..."> sont des liens cliquables.
+     Les cartes <div> ne redirigent pas encore (lien à ajouter).
+     ============================================================ -->
+<section id="projets" class="container projects-section">
+  <div class="section-header">
+    <span class="section-num">03 /</span>
+    <h2>Projets data</h2>
+  </div>
+  <div class="projects-grid">
+
+    <!-- Projet 1 : Kepler — REMPLACE href="#" par l'URL de ton repo GitHub -->
+    <a href="#" class="project-card">
+      <div class="project-tag">
+        <span class="dot dot-green"></span>Personnel · 2026 · NASA
+      </div>
+      <div class="project-title">Capstone — Dataset Exoplanètes Kepler</div>
+      <div class="project-desc">Analyse exploratoire du dataset NASA Kepler — classification des candidates exoplanètes. Nettoyage, visualisation et interprétation des données astrophysiques.</div>
+      <div class="project-tools">
+        <span class="project-tool">Python</span>
+        <span class="project-tool">Jupyter Notebook</span>
+        <span class="project-tool">pandas</span>
+        <span class="project-tool">matplotlib</span>
+      </div>
+    </a>
+
+    <!-- Projet 2 : Analyse commerciale (formation Google) -->
+    <div class="project-card">
+      <div class="project-tag"><span class="dot dot-muted"></span>Formation Google</div>
+      <div class="project-title">Analyse commerciale</div>
+      <div class="project-desc">Extraction et nettoyage de données de ventes, analyse des tendances d'achat. Élaboration d'un tableau de bord et recommandations métiers.</div>
+      <div class="project-tools">
+        <span class="project-tool">SQL</span>
+        <span class="project-tool">Excel</span>
+      </div>
+    </div>
+
+    <!-- Projet 3 : Visualisation (formation Google) -->
+    <div class="project-card">
+      <div class="project-tag"><span class="dot dot-muted"></span>Formation Google</div>
+      <div class="project-title">Visualisation de données</div>
+      <div class="project-desc">Création de tableaux de bord interactifs, sélection des KPI, restitution des résultats pour une audience métier.</div>
+      <div class="project-tools">
+        <span class="project-tool">Tableau</span>
+      </div>
+    </div>
+
+    <!-- Projet 4 : Préparation de données (formation Google) -->
+    <div class="project-card">
+      <div class="project-tag"><span class="dot dot-muted"></span>Formation Google</div>
+      <div class="project-title">Préparation de données</div>
+      <div class="project-desc">Traitement de jeux de données bruts complexes, standardisation des formats. Documentation structurée des étapes de nettoyage.</div>
+      <div class="project-tools">
+        <span class="project-tool">Python</span>
+        <span class="project-tool">BigQuery</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     SECTION EXPÉRIENCE
+     id="experience" ← correspond au href="#experience" dans le menu
+     Structure : grille 2 colonnes (date | contenu) par entrée
+     ============================================================ -->
+<section id="experience" class="container experience-section">
+  <div class="section-header">
+    <span class="section-num">04 /</span>
+    <h2>Expérience</h2>
+  </div>
+  <div class="timeline">
+
+    <!-- Entrée 1 : O3 Experts (stage data analyst) -->
+    <div class="timeline-item">
+      <div>
+        <div class="timeline-date">Avril 2026</div>
+        <div class="timeline-org">O3 Experts AE · Tours</div>
+      </div>
+      <div>
+        <div class="timeline-role">Stagiaire Data Analyst</div>
+        <div class="timeline-body"><ul>
+          <li>Collecte et organisation de données issues de l'activité de la structure</li>
+          <li>Nettoyage et mise en forme de jeux de données sous Excel</li>
+          <li>Analyse de données opérationnelles et suivi d'indicateurs de performance</li>
+          <li>Création de tableaux de bord (dashboards) à destination de l'équipe</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- Entrée 2 : Groupe Synov -->
+    <div class="timeline-item">
+      <div>
+        <div class="timeline-date">2023</div>
+        <div class="timeline-org">Groupe Synov</div>
+      </div>
+      <div>
+        <div class="timeline-role">Stage — Analyste Tests & Systèmes Électroniques</div>
+        <div class="timeline-body"><ul>
+          <li>Programmation de microcontrôleurs (C++) et validation de systèmes</li>
+          <li>Analyse des données de tests et rédaction de documentation technique structurée</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- Entrée 3 : Safran -->
+    <div class="timeline-item">
+      <div>
+        <div class="timeline-date">2020</div>
+        <div class="timeline-org">Safran Electronics & Defense</div>
+      </div>
+      <div>
+        <div class="timeline-role">Stage — Chargé d'Analyse et Validation</div>
+        <div class="timeline-body"><ul>
+          <li>Réalisation de plus de 500 tests sur des systèmes critiques</li>
+          <li>Analyse de données de haute précision et détection d'anomalies (normes qualité aéronautique)</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- Entrée 4 : Aide-soignant -->
+    <div class="timeline-item">
+      <div>
+        <div class="timeline-date">2014 — 2019</div>
+        <div class="timeline-org">Établissements de santé · SSIAD</div>
+      </div>
+      <div>
+        <div class="timeline-role">Aide-Soignant</div>
+        <div class="timeline-body"><ul>
+          <li>Suivi des constantes et données vitales, détection préventive d'anomalies</li>
+          <li>Collecte rigoureuse de données sensibles en environnement réglementé</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- Entrée 5 : Technicien informatique indépendant -->
+    <div class="timeline-item">
+      <div>
+        <div class="timeline-date">2010 — 2013</div>
+        <div class="timeline-org">Indépendant</div>
+      </div>
+      <div>
+        <div class="timeline-role">Technicien Maintenance Informatique</div>
+        <div class="timeline-body"><ul>
+          <li>Diagnostic de pannes matérielles et logicielles (PC, réseaux), gestion client</li>
+        </ul></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     SECTION FORMATIONS & CERTIFICATIONS
+     id="formations" ← correspond au href="#formations" dans le menu
+     ============================================================ -->
+<section id="formations" class="container formations-section">
+  <div class="section-header">
+    <span class="section-num">05 /</span>
+    <h2>Formations & Certifications</h2>
+  </div>
+  <div class="formations-grid">
+
+    <!-- Carte avec bordure amber = formation en cours -->
+    <div class="formation-card" style="border-color: rgba(240,160,48,0.3);">
+      <div class="formation-year" style="color: var(--amber);">En cours</div>
+      <div class="formation-title">Machine Learning Specialization</div>
+      <div class="formation-detail">Andrew Ng · Coursera · cours du soir</div>
+    </div>
+
+    <!-- Carte avec bordure verte = certif obtenue -->
+    <div class="formation-card" style="border-color: rgba(60,232,138,0.3);">
+      <div class="formation-year" style="color: var(--green);">Avril 2026</div>
+      <div class="formation-title">Certification Google Data Analytics</div>
+      <div class="formation-detail">Google · Coursera</div>
+    </div>
+
+    <div class="formation-card">
+      <div class="formation-year">2023</div>
+      <div class="formation-title">Titre Pro Électronicien de Test et de Développement</div>
+      <div class="formation-detail">Bac+2</div>
+    </div>
+
+    <div class="formation-card">
+      <div class="formation-year">2014</div>
+      <div class="formation-title">Diplôme d'État d'Aide-Soignant</div>
+    </div>
+
+    <div class="formation-card">
+      <div class="formation-year">1997</div>
+      <div class="formation-title">Baccalauréat MRBT</div>
+      <div class="formation-detail">Maintenance Réseaux Bureautique et Télématique</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     IMPORTANT : remplace les href de GitHub et LinkedIn par les tiens !
+     ============================================================ -->
+<footer id="contact">
+  <p>© 2026 David Moinse · Cheillé, Indre-et-Loire</p>
+  <div class="footer-links">
+    <!-- REMPLACE par ton URL GitHub réelle -->
+    <a href="https://github.com/TON-USERNAME" target="_blank">GitHub</a>
+    <!-- REMPLACE par ton URL LinkedIn réelle -->
+    <a href="https://linkedin.com/in/TON-PROFIL" target="_blank">LinkedIn</a>
+    <a href="mailto:david.moinse370@gmail.com">Contact</a>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT — Animation des étoiles (fond de page)
+     
+     Fonctionnement général :
+     1. On récupère le <canvas id="stars">
+     2. On crée 220 étoiles avec des propriétés aléatoires
+     3. On les redessine 60 fois par seconde (requestAnimationFrame)
+        → chaque étoile se déplace légèrement et scintille
+     ============================================================ -->
+<script>
+
+  // Récupère l'élément canvas HTML et son contexte 2D (pour dessiner)
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+
+  // Variables globales : largeur, hauteur, tableau d'étoiles
+  let W, H, stars = [];
+
+  // Adapte le canvas à la taille de la fenêtre
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  // Crée 220 étoiles avec des propriétés aléatoires
+  function initStars() {
+    stars = [];
+    for (let i = 0; i < 220; i++) {
+      stars.push({
+        x:       Math.random() * W,          // Position horizontale aléatoire
+        y:       Math.random() * H,          // Position verticale aléatoire
+        r:       Math.random() * 1.2 + 0.2, // Rayon entre 0.2 et 1.4 px
+        alpha:   Math.random() * 0.6 + 0.1, // Opacité de base (0.1 à 0.7)
+        drift:   (Math.random() - 0.5) * 0.015, // Dérive verticale lente
+        twinkle: Math.random() * Math.PI * 2    // Phase du scintillement (aléatoire)
+      });
+    }
+  }
+
+  // Fonction de dessin — appelée en boucle (environ 60x/seconde)
+  function draw() {
+    ctx.clearRect(0, 0, W, H);  // Efface l'image précédente
+
+    stars.forEach(s => {
+      s.twinkle += 0.012;  // Fait avancer la phase du scintillement
+
+      // Calcule l'opacité actuelle (oscille entre alpha-0.15 et alpha+0.15)
+      const a = s.alpha + Math.sin(s.twinkle) * 0.15;
+
+      // Dessine l'étoile (cercle rempli bleu-blanc)
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(180,220,255,${Math.max(0, a)})`;
+      ctx.fill();
+
+      // Déplace légèrement l'étoile vers le haut ou le bas
+      s.y += s.drift;
+
+      // Reboucle : si l'étoile sort par le bas, elle réapparaît en haut (et vice versa)
+      if (s.y < 0) s.y = H;
+      if (s.y > H) s.y = 0;
+    });
+
+    // Planifie la prochaine frame (boucle infinie à 60fps)
+    requestAnimationFrame(draw);
+  }
+
+  // Initialisation au chargement de la page
+  resize();
+  initStars();
+  draw();
+
+  // Recalcule tout si la fenêtre est redimensionnée
+  window.addEventListener('resize', () => { resize(); initStars(); });
+
+</script>
+</body>
+</html>
